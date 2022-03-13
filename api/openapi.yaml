@@ -1,0 +1,211 @@
+openapi: 3.0.0
+info:
+  description: Shopping-Cart API
+  title: Shopping-Cart API
+  contact:
+    name: Navid Babakhani
+    email: navid.babakhani@gmail.com
+    url: https://github.com/navidbabakhani/
+  version: 1.0.0
+paths:
+  /api/cart:
+    get:
+      description: Get the shopping cart
+      responses:
+        '200':
+          description: "Returns the shopping cart"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonResponseBody'
+        '404':
+          $ref: '#/components/responses/client-error2'
+        '500':
+          $ref: '#/components/responses/server-error'
+    post:
+      description: Add items to the shopping cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ShoppingCartReqItem'
+      responses:
+        '200':
+          description: "Returns the shopping cart"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonResponseBody'
+        '404':
+          $ref: '#/components/responses/client-error2'
+        '500':
+          $ref: '#/components/responses/server-error'
+    patch:
+      description: Reduce the number of items in the shopping cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ShoppingCartReqItem'
+      responses:
+        '200':
+          description: "Returns the shopping cart"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonResponseBody'
+        '404':
+          $ref: '#/components/responses/client-error2'
+        '500':
+          $ref: '#/components/responses/server-error'
+    delete:
+      description: Remove items from the shopping cart
+      parameters:
+        - name: itemsIds
+          in: query
+          description: |
+            Item ids to be removed from the cart
+          schema:
+            type: array
+            items:
+              type: integer
+      responses:
+        '200':
+          description: "Returns the shopping cart"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonResponseBody'
+        '404':
+          $ref: '#/components/responses/client-error2'
+        '500':
+          $ref: '#/components/responses/server-error'
+  /api/cart/all:
+    delete:
+      description: Remove all items from the shopping cart
+      responses:
+        '200':
+          description: "Returns the shopping cart"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonResponseBody'
+        '404':
+          $ref: '#/components/responses/client-error2'
+        '500':
+          $ref: '#/components/responses/server-error'
+  /api/cart/discount:
+    get:
+      description: set a discount for the shopping cart
+      parameters:
+        - name: discountCoupon
+          in: query
+          description: |
+            A discount phrase to be applied on the cart
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Returns the shopping cart"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonResponseBody'
+        '404':
+          $ref: '#/components/responses/client-error2'
+        '500':
+          $ref: '#/components/responses/server-error'
+    delete:
+      description: clear the discount from the shopping cart
+      responses:
+        '200':
+          description: "Returns the shopping cart"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonResponseBody'
+        '404':
+          $ref: '#/components/responses/client-error2'
+        '500':
+          $ref: '#/components/responses/server-error'
+
+components:
+  schemas:
+    CommonResponseBody:
+      type: object
+      properties:
+        meta:
+          type: object
+          properties:
+            pageToken:
+              type: string
+        data:
+          $ref: '#/components/schemas/Data'
+    Data:
+      type: object
+      properties:
+        totalPrice:
+          type: number
+          nullable: false
+          example: 123.45
+        priceAfterDiscount:
+          type: number
+          nullable: false
+          example: 120.23
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShoppingCartItem'
+    ShoppingCartItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        displayName:
+          type: string
+        price:
+          type: number
+        quantity:
+          type: integer
+    ShoppingCartReqItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        quantity:
+          type: integer
+  responses:
+    client-error2:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            properties:
+              service:
+                type: string
+                example: shopping-cart
+              errorCode:
+                type: integer
+                example: 404
+              errorMessage:
+                type: string
+                example: 'Shopping cart with id: 2 is not found'
+    server-error:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            properties:
+              service:
+                type: string
+                example: shopping-cart
+              errorCode:
+                type: integer
+                example: 500
+              errorMessage:
+                type: string
+                example: 'Internal Server Error'
